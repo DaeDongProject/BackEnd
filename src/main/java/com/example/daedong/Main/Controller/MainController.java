@@ -18,7 +18,7 @@ import java.util.UUID;
 @RequestMapping("/daedong")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MainController {
-    private static final String PROJECT_ID = "firstagent-mglo";
+    private static final String PROJECT_ID = "daedong-nnlp";
     private static final String SESSION_ID = UUID.randomUUID().toString();
 
     private final ChatRepository chatRepository;
