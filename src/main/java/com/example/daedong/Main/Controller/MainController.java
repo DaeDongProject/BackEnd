@@ -1,14 +1,12 @@
 package com.example.daedong.Main.Controller;
 
 import com.example.daedong.Dto.AnswerRequestDto;
-import com.example.daedong.Main.Repository.ChatRepository;
+import com.example.daedong.Dto.ChatRoom;
+import com.example.daedong.Main.Repository.UserRepository;
 import com.example.daedong.Main.Service.MainServiceImpl;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -21,11 +19,11 @@ public class MainController {
     private static final String PROJECT_ID = "daedong-nnlp";
     private static final String SESSION_ID = UUID.randomUUID().toString();
 
-    private final ChatRepository chatRepository;
+    private final UserRepository userRepository;
     private final MainServiceImpl mainService;
 
-    public MainController(ChatRepository chatRepository, MainServiceImpl mainService) {
-        this.chatRepository = chatRepository;
+    public MainController(UserRepository chatRepository, UserRepository userRepository, MainServiceImpl mainService) {
+        this.userRepository = userRepository;
         this.mainService = mainService;
     }
 
@@ -37,5 +35,16 @@ public class MainController {
             return mainService.processSearch(answerRequestDto.getId(), answerRequestDto.getQuestion());
         else
             return answer;
+    }
+
+    @GetMapping("/{userId}")
+    public ChatRoom NewestChat(@PathVariable String userId){
+        String chatId = mainService.findChatRoomObjectId(userId);
+        return mainService.findById(chatId);
+    }
+
+    @GetMapping("/chatroom/{chatRoomId}")
+    public ChatRoom SelectedChat(@PathVariable String chatRoomId){
+        return mainService.findById(chatRoomId);
     }
 }
