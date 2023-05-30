@@ -2,7 +2,10 @@ package com.example.daedong.Main.Service;
 
 import com.example.daedong.Dto.ChatGPTRequest;
 import com.example.daedong.Dto.ChatGPTResponse;
-import com.example.daedong.Main.Repository.ChatRepository;
+import com.example.daedong.Dto.ChatRoom;
+import com.example.daedong.Dto.User;
+import com.example.daedong.Main.Repository.ChatRoomRepository;
+import com.example.daedong.Main.Repository.UserRepository;
 import com.google.api.gax.rpc.ApiException;
 //import com.google.cloud.dialogflow.v2.*;
 import com.google.cloud.dialogflow.v2.*;
@@ -31,6 +34,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -43,17 +47,20 @@ public class MainServiceImpl implements MainService {
     private String OPEN_AI_KEY;
 
     private final MongoTemplate mongoTemplate;
-    private final ChatRepository chatRepository;
+    private final UserRepository userRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
-    public MainServiceImpl(MongoTemplate mongoTemplate, ChatRepository chatRepository) {
+    public MainServiceImpl(MongoTemplate mongoTemplate, UserRepository userRepository, ChatRoomRepository chatRoomRepository) {
         this.mongoTemplate = mongoTemplate;
-        this.chatRepository = chatRepository;
+        this.userRepository = userRepository;
+        this.chatRoomRepository = chatRoomRepository;
     }
 
     Update update = new Update();
     List<Document> array = new ArrayList<>();
     org.bson.Document item = new org.bson.Document();
 
+    // get answer from DialogFlow
     @Override
     public String detectIntentTexts(String chatId, String projectId, String question, String sessionId, String languageCode) throws IOException, ApiException {
         Query query = new Query().addCriteria(Criteria.where("_id").is(new ObjectId(chatId)));
@@ -88,7 +95,7 @@ public class MainServiceImpl implements MainService {
             encodedText = encodedText.replaceAll("!", "\\\\041");
             encodedText = encodedText.replaceAll("\\.", "\\\\056");
             encodedText = encodedText.replaceAll("\\?", "\\\\077");
-            encodedText = encodedText.replaceAll("\\,","\\\\054");
+            encodedText = encodedText.replaceAll("\\,", "\\\\054");
 
             // 8진수 ASCII 문자열을 바이트 배열로 변환
             String[] octalBytes = encodedText.split("\\\\");
@@ -105,9 +112,9 @@ public class MainServiceImpl implements MainService {
                     queryResult.getIntent().getDisplayName(), queryResult.getIntentDetectionConfidence());
             System.out.format("Fulfillment Text: '%s'\n", decodedText);
 
-            if(queryResult.getIntent().getDisplayName().equals("Default Fallback Intent"))
+            if (queryResult.getIntent().getDisplayName().equals("Default Fallback Intent"))
                 return "fallback";
-            else if(queryResult.getIntent().getDisplayName().equals("Default Welcome Intent"))
+            else if (queryResult.getIntent().getDisplayName().equals("Default Welcome Intent"))
                 return "fallback";
         }
         item.put("question", question);
@@ -123,8 +130,9 @@ public class MainServiceImpl implements MainService {
         return decodedText;
     }
 
+    // get answer from ChatGPT
     @Override
-    public String processSearch(String chatId, String question){
+    public String processSearch(String chatId, String question) {
         Query query = new Query().addCriteria(Criteria.where("_id").is(new ObjectId(chatId)));
 
         ChatGPTRequest chatGPTRequest = new ChatGPTRequest();
@@ -171,9 +179,25 @@ public class MainServiceImpl implements MainService {
             } catch (Exception e) {
                 return "failed";
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return "failed";
         }
+    }
+
+    // find newest chatRoomObjectId
+    @Override
+    public String findChatRoomObjectId(String userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null && user.getChatRoomOid() != null) {
+            return user.getChatRoomOid().get(user.getChatRoomOid().size() - 1);
+        } else {
+            return "false"; // chatroom이 없어 null 일 경우 새채팅방 생성 후 리턴해야함 일단 false
+        }
+    }
+
+    // get ChatRoom Data of Requested ChatRoomObjectId
+    @Override
+    public ChatRoom findById(String chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId).get();
     }
 }

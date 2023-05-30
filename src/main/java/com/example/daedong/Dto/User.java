@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
+import java.util.List;
 
 @Data
 @Document(collection = "User")
@@ -17,5 +18,5 @@ public class User {
     private String schoolName;
     private boolean pushAlarm;
     private boolean personalInformation;
-    private String[] chatRoomOid;
+    private List<String> chatRoomOid;
 }
