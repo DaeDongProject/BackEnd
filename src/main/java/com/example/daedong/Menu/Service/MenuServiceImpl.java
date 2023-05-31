@@ -46,7 +46,7 @@ public class MenuServiceImpl implements MenuService{
     @Override
     public String createChatRoom(User user) {
         ChatRoom chatRoom = new ChatRoom();
-        Object[] objects = {};
+        List<Object> objects = new ArrayList<>();
         chatRoom.setUserId(user.get_id());
         chatRoom.setChatTitle("New Chat");
         chatRoom.setDeleteYn(false);
