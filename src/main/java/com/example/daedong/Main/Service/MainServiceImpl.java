@@ -1,9 +1,7 @@
 package com.example.daedong.Main.Service;
 
-import com.example.daedong.Dto.ChatGPTRequest;
-import com.example.daedong.Dto.ChatGPTResponse;
-import com.example.daedong.Dto.ChatRoom;
-import com.example.daedong.Dto.User;
+import com.example.daedong.Dto.*;
+import com.example.daedong.Dto.Context;
 import com.example.daedong.Main.Repository.ChatRoomRepository;
 import com.example.daedong.Main.Repository.UserRepository;
 import com.google.api.gax.rpc.ApiException;
@@ -34,6 +32,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -199,5 +198,26 @@ public class MainServiceImpl implements MainService {
     @Override
     public ChatRoom findById(String chatRoomId) {
         return chatRoomRepository.findById(chatRoomId).get();
+    }
+
+    // Request to modify wrong information
+    @Override
+    public String modifyInformation(ModifyRequestDto modifyRequestDto) {
+        ChatRoom chatRoom = chatRoomRepository.findById(modifyRequestDto.get_id()).orElse(null);
+
+        if (chatRoom != null) {
+            List<Object> contextUser = chatRoom.getContextUser();
+            if (contextUser != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> context = (Map<String, Object>) contextUser.get(modifyRequestDto.getContextIndex());
+                context.put("modifyRequest", true);
+                context.put("modifyText", modifyRequestDto.getText());
+            }
+            chatRoomRepository.save(chatRoom);
+
+            return "success";
+        } else {
+            return "failed";
+        }
     }
 }

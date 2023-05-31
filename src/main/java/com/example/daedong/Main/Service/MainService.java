@@ -1,6 +1,7 @@
 package com.example.daedong.Main.Service;
 
 import com.example.daedong.Dto.ChatRoom;
+import com.example.daedong.Dto.ModifyRequestDto;
 import com.google.api.gax.rpc.ApiException;
 import java.io.IOException;
 
@@ -12,4 +13,6 @@ public interface MainService {
     String findChatRoomObjectId(String id);
 
     ChatRoom findById(String id);
+
+    String modifyInformation(ModifyRequestDto modifyRequestDto);
 }
