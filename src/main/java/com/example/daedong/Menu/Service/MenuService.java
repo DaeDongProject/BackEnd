@@ -4,4 +4,7 @@ import org.springframework.stereotype.Service;
 
 public interface MenuService {
 
+    String createNewChat(String userId);
+
+
 }
