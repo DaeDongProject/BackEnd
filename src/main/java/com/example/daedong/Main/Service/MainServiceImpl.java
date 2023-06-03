@@ -208,8 +208,10 @@ public class MainServiceImpl implements MainService {
         if (chatRoom != null) {
             List<Object> contextUser = chatRoom.getContextUser();
             if (contextUser != null) {
+
                 @SuppressWarnings("unchecked")
                 Map<String, Object> context = (Map<String, Object>) contextUser.get(modifyRequestDto.getContextIndex());
+
                 context.put("modifyRequest", true);
                 context.put("modifyText", modifyRequestDto.getText());
             }
