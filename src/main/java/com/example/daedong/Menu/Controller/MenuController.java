@@ -28,8 +28,6 @@ public class MenuController {
     public String CreateChatRoom(@RequestBody User user){
         String ObjectId = menuService.createChatRoom(user);
         menuService.insertChatRoomOnjectId(user,ObjectId);
-        log.info("ChatRoom ObjectId : ", ObjectId);
-        log.info("User id : ", user.get_id());
         return ObjectId;
     }
 
