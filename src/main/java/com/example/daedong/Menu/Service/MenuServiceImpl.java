@@ -6,6 +6,7 @@ import com.example.daedong.Dto.User;
 import com.example.daedong.Main.Repository.ChatRoomRepository;
 import com.example.daedong.Main.Repository.UserRepository;
 import com.google.api.gax.rpc.ApiException;
+import com.mongodb.client.result.UpdateResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -64,20 +65,43 @@ public class MenuServiceImpl implements MenuService{
         return "true";
     }
 
+    // chatRoom deleteYn이 false일 때로 변경
     @Override
     public List<PastChatRoom> selectPastChatTitle(String userId) {
         List<String> chatRoomObjectId = new ArrayList<>();
-        List<String> chatTitle = new ArrayList<>();
+        ChatRoom chatRoom = new ChatRoom();
         List<PastChatRoom> pastChatRooms = new ArrayList<>();
         chatRoomObjectId = userRepository.findById(userId).get().getChatRoomOid();
+
+
+
         for(int i = 0; i<chatRoomObjectId.size(); i++){
-            PastChatRoom pastChatRoom = new PastChatRoom();
-            pastChatRoom.setObjectId(chatRoomObjectId.get(i));
-            pastChatRoom.setChatTitle(chatRoomRepository.findById(chatRoomObjectId.get(i)).get().getChatTitle());
-            pastChatRooms.add(pastChatRoom);
+            if(chatRoomRepository.findById(chatRoomObjectId.get(i)).get().isDeleteYn() == false) {
+                PastChatRoom pastChatRoom = new PastChatRoom();
+                pastChatRoom.setObjectId(chatRoomObjectId.get(i));
+                pastChatRoom.setChatTitle(chatRoomRepository.findById(chatRoomObjectId.get(i)).get().getChatTitle());
+                pastChatRooms.add(pastChatRoom);
+            } else continue;
         }
 
         return pastChatRooms;
+    }
+
+    @Override
+    public String updateChatTitle(String objectId, String newChatTitle) {
+        ChatRoom chatRoom = chatRoomRepository.findById(objectId).orElse(null);    //    if(chatRoom.isDeleteYn() == false){
+        chatRoom.setChatTitle(newChatTitle);
+        chatRoomRepository.save(chatRoom);
+
+        return "success";
+    }
+
+    @Override
+    public String deleteChatRoom(String ObjectId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(ObjectId).orElse(null);
+        chatRoom.setDeleteYn(true);
+        chatRoomRepository.save(chatRoom);
+        return "success";
     }
 
 }

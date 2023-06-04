@@ -1,5 +1,6 @@
 package com.example.daedong.Menu.Controller;
 
+import com.example.daedong.Dto.ChatRoom;
 import com.example.daedong.Dto.PastChatRoom;
 import com.example.daedong.Dto.User;
 import com.example.daedong.Menu.Service.MenuServiceImpl;
@@ -35,5 +36,15 @@ public class MenuController {
     @GetMapping("/pastList/{userId}")
     public List<PastChatRoom> PastList(@PathVariable String userId) throws Exception{
         return menuService.selectPastChatTitle(userId);
+    }
+
+    @PostMapping("/updatetitle/{newChatTitle}")
+    public String UpdateChatTitle(@RequestBody ChatRoom chatRoom, @PathVariable String newChatTitle){
+        return menuService.updateChatTitle(chatRoom.get_id(), newChatTitle);
+    }
+
+    @PostMapping("deletechatroom")
+    public String DeleteChatRoom(@RequestBody ChatRoom chatRoom){
+        return menuService.deleteChatRoom(chatRoom.get_id());
     }
 }

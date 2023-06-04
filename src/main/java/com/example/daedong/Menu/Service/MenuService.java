@@ -1,5 +1,6 @@
 package com.example.daedong.Menu.Service;
 
+import com.example.daedong.Dto.ChatRoom;
 import com.example.daedong.Dto.PastChatRoom;
 import com.example.daedong.Dto.User;
 import org.springframework.stereotype.Service;
@@ -15,4 +16,8 @@ public interface MenuService {
     String insertChatRoomOnjectId(User user, String ObjectId);
 
     List<PastChatRoom> selectPastChatTitle(String userId);
+
+    String updateChatTitle(String ObjectId, String newChatTitle);
+
+    String deleteChatRoom(String ObjectId);
 }
