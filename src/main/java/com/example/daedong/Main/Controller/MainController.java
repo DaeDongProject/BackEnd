@@ -6,6 +6,7 @@ import com.example.daedong.Dto.ModifyRequestDto;
 import com.example.daedong.Main.Repository.UserRepository;
 import com.example.daedong.Main.Service.MainServiceImpl;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/daedong")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -22,11 +24,6 @@ public class MainController {
 
     private final UserRepository userRepository;
     private final MainServiceImpl mainService;
-
-    public MainController(UserRepository chatRepository, UserRepository userRepository, MainServiceImpl mainService) {
-        this.userRepository = userRepository;
-        this.mainService = mainService;
-    }
 
     @PostMapping("/chatroom/question")
     public String AnswerRequest(@RequestBody AnswerRequestDto answerRequestDto) throws IOException {
