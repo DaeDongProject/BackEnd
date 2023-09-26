@@ -3,11 +3,13 @@ package com.example.daedong.Menu.Service;
 import com.example.daedong.Dto.ChatRoom;
 import com.example.daedong.Dto.PastChatRoom;
 import com.example.daedong.Dto.User;
+import com.example.daedong.Dto.UserForm;
 import com.example.daedong.Main.Repository.ChatRoomRepository;
 import com.example.daedong.Main.Repository.UserRepository;
 import com.google.api.gax.rpc.ApiException;
 import com.mongodb.client.result.UpdateResult;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -15,8 +17,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,24 +29,16 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService{
 
     private final UserRepository userRepository;
     private final MongoTemplate mongoTemplate;
     private final ChatRoomRepository chatRoomRepository;
-
+    private final PasswordEncoder passwordEncoder;
     Update update = new Update();
     List<Document> array = new ArrayList<>();
     org.bson.Document item = new org.bson.Document();
-
-
-
-    public MenuServiceImpl(UserRepository userRepository, MongoTemplate mongoTemplate, ChatRoomRepository chatRoomRepository) {
-        this.userRepository = userRepository;
-        this.mongoTemplate = mongoTemplate;
-        this.chatRoomRepository = chatRoomRepository;
-    }
-
 
     @Override
     public String createChatRoom(User user) {
@@ -104,4 +100,29 @@ public class MenuServiceImpl implements MenuService{
         return "success";
     }
 
+    @Override
+    @Transactional
+    public boolean deleteBySchoolEmail(User user) {
+        try {
+            userRepository.deleteById(user.get_id());
+            System.out.println("회원 삭제 완료");
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean update(User user) {
+        try {
+            userRepository.save(user);
+            System.out.println("회원 정보 수정 완료");
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
 }

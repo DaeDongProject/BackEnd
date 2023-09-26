@@ -9,6 +9,7 @@ import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.dialogflow.v2.*;
 import com.google.gson.Gson;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -33,10 +34,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MainServiceImpl implements MainService {
 
     @Value("${OPEN_AI_URL}")
@@ -48,12 +49,6 @@ public class MainServiceImpl implements MainService {
     private final MongoTemplate mongoTemplate;
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
-
-    public MainServiceImpl(MongoTemplate mongoTemplate, UserRepository userRepository, ChatRoomRepository chatRoomRepository) {
-        this.mongoTemplate = mongoTemplate;
-        this.userRepository = userRepository;
-        this.chatRoomRepository = chatRoomRepository;
-    }
 
     Update update = new Update();
     List<Document> array = new ArrayList<>();
