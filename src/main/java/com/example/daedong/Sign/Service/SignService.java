@@ -14,11 +14,7 @@ public interface SignService {
     // 회원 정보 저장 (회원가입)
     String saveMember(UserForm userForm);
 
-    // 회원 정보 수정
-    void update(UserForm userForm);
 
-    // 회원 정보 삭제
-    void deleteBySchoolEmail(User user);
 
     // 학교 이메일 중복검사
     boolean checkSchoolEmail(String schoolEmail);

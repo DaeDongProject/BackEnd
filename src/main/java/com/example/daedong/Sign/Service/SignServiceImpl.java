@@ -70,30 +70,9 @@ public class SignServiceImpl implements SignService {
         return true;
     }
 
-    @Override
-    @Transactional
-    public void deleteBySchoolEmail(User user) {
-        try {
-            userRepository.deleteById(user.get_id());
-            System.out.println("회원 삭제 완료");
-        }catch (Exception e){
-            e.printStackTrace();
-            throw e;
-        }
 
-    }
 
-    @Override
-    @Transactional
-    public void update(UserForm memberForm) {
-//        memberRepository.
-    }
 
-//    public Member findByMember(String schoolEmail) {
-//        Member member = new Member();
-//        member = memberRepository.findBySchoolEmail(schoolEmail);
-//
-//        return member;
-//    }
+
 
 }

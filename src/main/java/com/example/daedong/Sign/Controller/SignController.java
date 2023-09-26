@@ -82,16 +82,6 @@ public class SignController {
         return signService.saveMember(userForm);
     }
 
-    // 회원 상세정보 조회
-//    @GetMapping("/users/{schoolEmail}")
-//    public User findMemberBySchoolEmail(@PathVariable final String schoolEmail) {
-//        return userRepository.findBySchoolEmail(schoolEmail);
-//    }
-
-
-//    회원 정보 수정
-
-//    회원 정보 삭제 (회원 탈퇴)
 
     //    SchoolEmail 중복 체크
     @GetMapping("/repeatCheck")
