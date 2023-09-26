@@ -1,10 +1,8 @@
 package com.example.daedong.Menu.Controller;
 
-import com.example.daedong.Dto.ChatRoom;
-import com.example.daedong.Dto.PastChatRoom;
-import com.example.daedong.Dto.User;
-import com.example.daedong.Dto.UserForm;
+import com.example.daedong.Dto.*;
 import com.example.daedong.Main.Repository.UserRepository;
+import com.example.daedong.Menu.FAQRepository;
 import com.example.daedong.Menu.Service.MenuServiceImpl;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
@@ -22,6 +20,7 @@ import java.util.Map;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MenuController {
 
+    private final FAQRepository faqRepository;
     private final MenuServiceImpl menuService;
     private final UserRepository userRepository;
 
@@ -76,5 +75,10 @@ public class MenuController {
            return "false";
        }
        return "success";
+    }
+
+    @GetMapping("/faq")
+    public List<FAQs> findAll(){
+        return faqRepository.findAll();
     }
 }
