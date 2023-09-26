@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/daedong/menu")

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 
 @RestController
+@CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/daedong")

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/daedong")
