@@ -51,7 +51,6 @@ public class MainServiceImpl implements MainService {
     private final ChatRoomRepository chatRoomRepository;
 
     Update update = new Update();
-    List<Document> array = new ArrayList<>();
     org.bson.Document item = new org.bson.Document();
 
     // get answer from DialogFlow
@@ -61,6 +60,7 @@ public class MainServiceImpl implements MainService {
 
         QueryResult queryResult;
         String decodedText;
+        List<Document> array = new ArrayList<>();
 
         // Instantiates a client
         try (SessionsClient sessionsClient = SessionsClient.create()) {
@@ -119,7 +119,7 @@ public class MainServiceImpl implements MainService {
         array.add(item);
 
         update.push("contextUser").each(array);
-        mongoTemplate.updateFirst(query, update, "ChatRoom");
+        mongoTemplate.upsert(query, update, "ChatRoom");
 
         return decodedText;
     }
@@ -144,6 +144,8 @@ public class MainServiceImpl implements MainService {
 
         log.info("body: " + body);
 
+        List<Document> array = new ArrayList<>();
+
         try {
             final StringEntity entity = new StringEntity(body, StandardCharsets.UTF_8);
             post.setEntity(entity);
@@ -167,7 +169,7 @@ public class MainServiceImpl implements MainService {
                 array.add(item);
 
                 update.push("contextUser").each(array);
-                mongoTemplate.updateFirst(query, update, "ChatRoom");
+                mongoTemplate.upsert(query, update, "ChatRoom");
 
                 return answer;
             } catch (Exception e) {
