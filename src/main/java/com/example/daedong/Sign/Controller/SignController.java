@@ -1,5 +1,6 @@
 package com.example.daedong.Sign.Controller;
 
+import com.example.daedong.Dto.LoginDto;
 import com.example.daedong.Dto.User;
 import com.example.daedong.Dto.UserForm;
 import com.example.daedong.Main.Repository.UserRepository;
@@ -34,12 +35,12 @@ public class SignController {
     // 로그인
     @PostMapping("/login")
     @ResponseBody
-    public User login(HttpServletRequest request, @RequestParam String schoolEmail, @RequestParam String password) {
+    public User login(HttpServletRequest request, @RequestBody LoginDto loginDto) {
 
         // 1. 회원 정보 조회
 //        String schoolEmail = request.getParameter("schoolEmail");
 //        String password = request.getParameter("password");
-        User user = signService.login(schoolEmail, password);
+        User user = signService.login(loginDto.getSchoolEmail(), loginDto.getPassword());
 
         // 2. 세션에 회원 정보 저장 & 세션 유지 시간 설정
         if (user != null) {
