@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class MenuController {
     private final FAQRepository faqRepository;
     private final MenuServiceImpl menuService;
     private final UserRepository userRepository;
-
+    private final PasswordEncoder passwordEncoder;
     @PostMapping("/createchatroom")
     public String CreateChatRoom(@RequestBody User user){
         String ObjectId = menuService.createChatRoom(user);
@@ -53,7 +54,7 @@ public class MenuController {
         User user = new User();
         user.set_id(_id);
         user.setName(userForm.getName());
-        user.setPassword(userForm.getPassword());
+        user.setPassword(passwordEncoder.encode(userForm.getPassword()));
         user.setSchoolEmail(userForm.getSchoolEmail());
         user.setSchoolName(userForm.getSchoolName());
         user.setPhoneNumber(userForm.getPhoneNumber());

@@ -90,4 +90,24 @@ public class SignController {
     public boolean repeatCheckSchoolEmail(@RequestParam String schoolEmail) {
         return signService.checkSchoolEmail(schoolEmail);
     }
+
+    // 회원 정보 수정, RequestBody에 user는 수정된 user
+    @PostMapping("/updateUser")
+    public User updateMember(@RequestBody final User user){
+        User updateUser = signService.updateMember(user);
+
+        if(updateUser != null){
+            return updateUser;
+        }else{
+            return null;
+        }
+    }
+
+    // 회원 정보 삭제(회원 탈퇴)
+    @PostMapping("/deleteUser")
+    public String deleteMember(@RequestBody User user){
+        String result = signService.deleteMember(user);
+
+        return result;
+    }
 }

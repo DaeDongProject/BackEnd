@@ -70,9 +70,28 @@ public class SignServiceImpl implements SignService {
         return true;
     }
 
+    // 회원 정보 수정 user는 업데이트 된 user
+    @Override
+    @Transactional
+    public User updateMember(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User updateUser = userRepository.save(user);
+        if(updateUser != null){
+            return updateUser;
+        }else{
+            return null;
+        }
+    }
 
-
-
-
-
+    //회원 정보 삭제(회원 탈퇴)
+    @Override
+    public String deleteMember(User user) {
+        try {
+            userRepository.deleteById(user.get_id());
+        }catch (Exception e){
+            e.printStackTrace();
+            return "false";
+        }
+        return "success";
+    }
 }
