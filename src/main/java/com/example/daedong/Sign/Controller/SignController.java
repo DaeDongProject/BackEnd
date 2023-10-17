@@ -34,7 +34,7 @@ public class SignController {
 
     // 로그인
     @PostMapping("/login")
-    @CrossOrigin(origins = "http://13.209.50.197:8080/daedong/login")
+//    @CrossOrigin(origins = "http://13.209.50.197:8080/daedong/login")
     @ResponseBody
     public User login(HttpServletRequest request, @RequestBody LoginDto loginDto) {
 
