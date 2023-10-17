@@ -8,7 +8,7 @@ import com.example.daedong.Sign.Service.SignServiceImpl;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,14 +16,14 @@ import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 
 @RestController
-@CrossOrigin
+//@CrossOrigin(origins = "http://13.209.50.197:8080/daedong/login")
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/daedong")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SignController {
-    private final SignServiceImpl signService;
 
+    private final SignServiceImpl signService;
     private final UserRepository userRepository;
 
     // 로그인 페이지
@@ -34,6 +34,7 @@ public class SignController {
 
     // 로그인
     @PostMapping("/login")
+    @CrossOrigin(origins = "http://13.209.50.197:8080/daedong/login")
     @ResponseBody
     public User login(HttpServletRequest request, @RequestBody LoginDto loginDto) {
 
