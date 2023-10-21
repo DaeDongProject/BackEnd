@@ -1,11 +1,9 @@
 package com.example.daedong.Main.Service;
 
 import com.example.daedong.Dto.*;
-import com.example.daedong.Dto.Context;
 import com.example.daedong.Main.Repository.ChatRoomRepository;
 import com.example.daedong.Main.Repository.UserRepository;
 import com.google.api.gax.rpc.ApiException;
-//import com.google.cloud.dialogflow.v2.*;
 import com.google.cloud.dialogflow.v2.*;
 import com.google.gson.Gson;
 
@@ -85,19 +83,19 @@ public class MainServiceImpl implements MainService {
             // Convert fulfillmentMessages to String
             String encodedText = String.valueOf(queryResult.getFulfillmentMessages(0).getText());
             encodedText = encodedText.substring(7, encodedText.length() - 2);
-            encodedText = encodedText.replaceAll(" ", "\\\\040");
-            encodedText = encodedText.replaceAll("!", "\\\\041");
-            encodedText = encodedText.replaceAll("\\.", "\\\\056");
-            encodedText = encodedText.replaceAll("\\?", "\\\\077");
-            encodedText = encodedText.replaceAll("\\,", "\\\\054");
 
-            // 8진수 ASCII 문자열을 바이트 배열로 변환
-            String[] octalBytes = encodedText.split("\\\\");
-            byte[] bytes = new byte[octalBytes.length - 1];
-            for (int i = 1; i < octalBytes.length; i++) {
-                bytes[i - 1] = (byte) Integer.parseInt(octalBytes[i], 8);
+            System.out.println(encodedText);
+            System.out.println("================");
+
+            ArrayList<String> arrayList = encodingTexts(encodedText);
+
+            // 8진수 유니코드를 바이트 배열로 변환
+            byte[] bytes = new byte[arrayList.size() - 1];
+            for (int i = 1; i < arrayList.size(); i++) {
+                bytes[i - 1] = (byte) Integer.parseInt(arrayList.get(i), 8);
             }
 
+            // 바이트 배열을 String 형식으로 파싱
             decodedText = new String(bytes, StandardCharsets.UTF_8);
 
             System.out.println("======================");
@@ -122,6 +120,98 @@ public class MainServiceImpl implements MainService {
         mongoTemplate.upsert(query, update, "ChatRoom");
 
         return decodedText;
+    }
+
+    @Override
+    public ArrayList<String> encodingTexts(String encodedText){
+        encodedText = encodedText.replaceAll(" ", "\\\\040");               // 공백을 인코딩
+        encodedText = encodedText.replaceAll("!", "\\\\041");               // !
+        encodedText = encodedText.replaceAll("\"", "\\042");              // "
+        encodedText = encodedText.replaceAll("%", "\\\\045");               // %
+        encodedText = encodedText.replaceAll("&", "\\\\046");               // &
+        encodedText = encodedText.replaceAll("'", "\\\\047");               // '
+        encodedText = encodedText.replaceAll("\\(", "\\\\050");             // (
+        encodedText = encodedText.replaceAll("\\)", "\\\\051");             // )
+        encodedText = encodedText.replaceAll("\\*", "\\\\052");             // *
+        encodedText = encodedText.replaceAll("\\+", "\\\\053");             // +
+        encodedText = encodedText.replaceAll(",", "\\\\054");               // ,
+        encodedText = encodedText.replaceAll("-", "\\\\055");               // -
+        encodedText = encodedText.replaceAll("\\.", "\\\\056");             // .
+        encodedText = encodedText.replaceAll("/", "\\\\057");               // /
+        encodedText = encodedText.replaceAll(":", "\\\\072");               // :
+        encodedText = encodedText.replaceAll("=", "\\\\075");               // =
+        encodedText = encodedText.replaceAll(">", "\\\\076");               // >
+        encodedText = encodedText.replaceAll("\\?", "\\\\077");             // ?
+        encodedText = encodedText.replaceAll("\\[", "\\\\133");             // [
+        encodedText = encodedText.replaceAll("]", "\\\\135");               // ]
+        encodedText = encodedText.replaceAll("\\\\n", "\\\\134\\\\156");    // \\n
+        encodedText = encodedText.replaceAll("~", "\\\\176");               // ~
+        encodedText = encodedText.replaceAll("※", "\\\\20073");             // ※
+        encodedText = encodedText.replaceAll("→", "\\\\20622");             // → // 왜 되는지 모르겠네
+
+        // 알파벳 인코딩 추가
+        for (char c = 'A'; c <= 'Z'; c++) {
+            encodedText = encodedText.replaceAll(Character.toString(c), convertToUnicodeOctal(c));
+        }
+        for (char c = 'a'; c <= 'z'; c++) {
+            encodedText = encodedText.replaceAll(Character.toString(c), convertToUnicodeOctal(c));
+        }
+
+        System.out.println(encodedText);
+        System.out.println("=====================");
+
+        String[] octalArray = encodedText.split("\\\\");
+        ArrayList<String>arrayList = new ArrayList<>();
+
+        for (String s : octalArray) {
+            if (s.length() > 3) {
+                arrayList.add(s.substring(0, 3));
+
+                String newStr = s.substring(3);
+                for (int j = 0; j < newStr.length(); j++) {
+                    String inputStr = "";
+
+                    if (newStr.charAt(j) == '0')
+                        inputStr = "060";
+                    else if (newStr.charAt(j) == '1')
+                        inputStr = "061";
+                    else if (newStr.charAt(j) == '2')
+                        inputStr = "062";
+                    else if (newStr.charAt(j) == '3')
+                        inputStr = "063";
+                    else if (newStr.charAt(j) == '4')
+                        inputStr = "064";
+                    else if (newStr.charAt(j) == '5')
+                        inputStr = "065";
+                    else if (newStr.charAt(j) == '6')
+                        inputStr = "066";
+                    else if (newStr.charAt(j) == '7')
+                        inputStr = "067";
+                    else if (newStr.charAt(j) == '8')
+                        inputStr = "070";
+                    else if (newStr.charAt(j) == '9')
+                        inputStr = "071";
+
+                    arrayList.add(inputStr);
+                }
+            } else {
+                arrayList.add(s);
+            }
+        }
+        System.out.println(arrayList);
+        System.out.println("================");
+
+        return arrayList;
+    }
+
+    @Override
+    // 유니코드를 8진수로 변환하는 메서드
+    public String convertToUnicodeOctal(char character) {
+        return convertToOctalString(character);
+    }
+
+    public String convertToOctalString(int value) {
+        return "\\\\" + Integer.toOctalString(value);
     }
 
     // get answer from ChatGPT
