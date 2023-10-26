@@ -139,6 +139,7 @@ public class MainServiceImpl implements MainService {
         encodedText = encodedText.replaceAll("\\.", "\\\\056");             // .
         encodedText = encodedText.replaceAll("/", "\\\\057");               // /
         encodedText = encodedText.replaceAll(":", "\\\\072");               // :
+        encodedText = encodedText.replaceAll("<", "\\\\074");               // <
         encodedText = encodedText.replaceAll("=", "\\\\075");               // =
         encodedText = encodedText.replaceAll(">", "\\\\076");               // >
         encodedText = encodedText.replaceAll("\\?", "\\\\077");             // ?
