@@ -3,6 +3,8 @@ package com.example.daedong.Main.Service;
 import com.example.daedong.Dto.*;
 import com.example.daedong.Main.Repository.ChatRoomRepository;
 import com.example.daedong.Main.Repository.UserRepository;
+import com.example.daedong.Menu.Controller.MenuController;
+import com.example.daedong.Menu.Service.MenuServiceImpl;
 import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.dialogflow.v2.*;
 import com.google.gson.Gson;
@@ -47,6 +49,7 @@ public class MainServiceImpl implements MainService {
     private final MongoTemplate mongoTemplate;
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final MenuController menuController;
 
     Update update = new Update();
     org.bson.Document item = new org.bson.Document();
@@ -54,6 +57,7 @@ public class MainServiceImpl implements MainService {
     // get answer from DialogFlow
     @Override
     public String detectIntentTexts(String chatId, String projectId, String question, String sessionId, String languageCode) throws IOException, ApiException {
+
         Query query = new Query().addCriteria(Criteria.where("_id").is(new ObjectId(chatId)));
 
         QueryResult queryResult;
@@ -62,6 +66,7 @@ public class MainServiceImpl implements MainService {
 
         // Instantiates a client
         try (SessionsClient sessionsClient = SessionsClient.create()) {
+
             //Set the session name using the sessionId (UUID) and projectID (my-project-id)
             SessionName session = SessionName.of(projectId, sessionId);
             System.out.println("Session Path : " + session.toString());
@@ -123,10 +128,11 @@ public class MainServiceImpl implements MainService {
     }
 
     @Override
-    public ArrayList<String> encodingTexts(String encodedText){
+    public ArrayList<String> encodingTexts(String encodedText) {
+
         encodedText = encodedText.replaceAll(" ", "\\\\040");               // 공백을 인코딩
         encodedText = encodedText.replaceAll("!", "\\\\041");               // !
-        encodedText = encodedText.replaceAll("\"", "\\042");              // "
+        encodedText = encodedText.replaceAll("\"", "\\042");                // "
         encodedText = encodedText.replaceAll("%", "\\\\045");               // %
         encodedText = encodedText.replaceAll("&", "\\\\046");               // &
         encodedText = encodedText.replaceAll("'", "\\\\047");               // '
@@ -162,7 +168,7 @@ public class MainServiceImpl implements MainService {
         System.out.println("=====================");
 
         String[] octalArray = encodedText.split("\\\\");
-        ArrayList<String>arrayList = new ArrayList<>();
+        ArrayList<String> arrayList = new ArrayList<>();
 
         for (String s : octalArray) {
             if (s.length() > 3) {
@@ -218,6 +224,7 @@ public class MainServiceImpl implements MainService {
     // get answer from ChatGPT
     @Override
     public String processSearch(String chatId, String question) {
+
         Query query = new Query().addCriteria(Criteria.where("_id").is(new ObjectId(chatId)));
 
         ChatGPTRequest chatGPTRequest = new ChatGPTRequest();
@@ -271,30 +278,40 @@ public class MainServiceImpl implements MainService {
         }
     }
 
-    // find newest chatRoomObjectId
+    // 해당 유저의 가장 최근 chatRoomObjectId 리턴
     @Override
-    public String findChatRoomObjectId(String userId) {
+    public String findChatRoomObjectId(String userId) throws NullPointerException {
+
         User user = userRepository.findById(userId).orElse(null);
-        if (user != null && user.getChatRoomOid() != null) {
-            return user.getChatRoomOid().get(user.getChatRoomOid().size() - 1);
+
+        if (user != null) {
+
+            if (user.getChatRoomOid().size() == 0) {
+                return menuController.CreateChatRoom(user); // 유저가 존재하고, 채팅방이 존재하지 않으면 새 채팅방 생성 후 Oid 반환
+            } else {
+                return user.getChatRoomOid().get(user.getChatRoomOid().size() - 1); // 유저가 존재하고, 채팅방이 존재하면 최근에 생성한 채팅방 Oid 반환
+            }
         } else {
-            return "false"; // chatroom이 없어 null 일 경우 새채팅방 생성 후 리턴해야함 일단 false
+            return "failed";
         }
     }
 
-    // get ChatRoom Data of Requested ChatRoomObjectId
+    // 요청받은 ChatRoomObjectId의 채팅 데이터를 반환
     @Override
     public ChatRoom findById(String chatRoomId) {
         return chatRoomRepository.findById(chatRoomId).get();
     }
 
-    // Request to modify wrong information
+    // 잘못된 정보를 수정하기 위한 요청
     @Override
     public String modifyInformation(ModifyRequestDto modifyRequestDto) {
+
         ChatRoom chatRoom = chatRoomRepository.findById(modifyRequestDto.get_id()).orElse(null);
 
         if (chatRoom != null) {
+
             List<Object> contextUser = chatRoom.getContextUser();
+
             if (contextUser != null) {
 
                 @SuppressWarnings("unchecked")
