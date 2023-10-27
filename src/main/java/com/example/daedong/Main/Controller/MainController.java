@@ -37,9 +37,14 @@ public class MainController {
     }
 
     @GetMapping("/{userId}")
-    public ChatRoom NewestChat(@PathVariable String userId) {
+    public ChatRoom NewestChat(@PathVariable String userId) throws Exception {
+
         String chatId = mainService.findChatRoomObjectId(userId);
-        return mainService.findById(chatId);
+
+        if (chatId.equals("failed"))
+            throw new Exception("failed");
+        else
+            return mainService.findById(chatId);
     }
 
     @GetMapping("/chatroom/{chatRoomId}")
@@ -48,7 +53,7 @@ public class MainController {
     }
 
     @PostMapping("/chatroom/modify")
-    public String ModifyRequest(@RequestBody ModifyRequestDto modifyRequestDto){
+    public String ModifyRequest(@RequestBody ModifyRequestDto modifyRequestDto) {
         return mainService.modifyInformation(modifyRequestDto);
     }
 }
