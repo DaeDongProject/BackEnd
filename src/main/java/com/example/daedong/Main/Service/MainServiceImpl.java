@@ -153,8 +153,6 @@ public class MainServiceImpl implements MainService {
         encodedText = encodedText.replaceAll("]", "\\\\135");               // ]
         encodedText = encodedText.replaceAll("\\\\n", "\\\\134\\\\156");    // \\n
         encodedText = encodedText.replaceAll("~", "\\\\176");               // ~
-        encodedText = encodedText.replaceAll("※", "\\\\20073");             // ※
-        encodedText = encodedText.replaceAll("→", "\\\\20622");             // → // 왜 되는지 모르겠네
 
         // 알파벳 인코딩 추가
         for (char c = 'A'; c <= 'Z'; c++) {
