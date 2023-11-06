@@ -34,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -287,7 +288,17 @@ public class MainServiceImpl implements MainService {
             if (user.getChatRoomOid().size() == 0) {
                 return menuController.CreateChatRoom(user); // 유저가 존재하고, 채팅방이 존재하지 않으면 새 채팅방 생성 후 Oid 반환
             } else {
-                return user.getChatRoomOid().get(user.getChatRoomOid().size() - 1); // 유저가 존재하고, 채팅방이 존재하면 최근에 생성한 채팅방 Oid 반환
+                ChatRoom chatRoom = new ChatRoom();
+
+                for (int i = 1; i <= user.getChatRoomOid().size(); i++) {
+
+                    chatRoom = chatRoomRepository.findById(user.getChatRoomOid().get(user.getChatRoomOid().size() - i)).get();
+
+                    if (!chatRoom.isDeleteYn()){    // 유저가 존재하고, 채팅방이 존재하면 최근에 생성한 채팅방 Oid 반환 + deleteYn이 false이어야 함
+                        break;
+                    }
+                }
+                return chatRoom.get_id();
             }
         } else {
             return "failed";
