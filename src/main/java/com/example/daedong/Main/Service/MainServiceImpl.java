@@ -103,6 +103,8 @@ public class MainServiceImpl implements MainService {
 
             // 바이트 배열을 String 형식으로 파싱
             decodedText = new String(bytes, StandardCharsets.UTF_8);
+            decodedText = decodedText.replaceAll("\\\\n", System.lineSeparator());
+
 
             System.out.println("======================");
             System.out.format("Query Text: '%s'\n", queryResult.getQueryText());
