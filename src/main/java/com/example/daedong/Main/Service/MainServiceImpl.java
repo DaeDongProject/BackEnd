@@ -114,8 +114,8 @@ public class MainServiceImpl implements MainService {
 
             if (queryResult.getIntent().getDisplayName().equals("Default Fallback Intent"))
                 return "fallback";
-            else if (queryResult.getIntent().getDisplayName().equals("Default Welcome Intent"))
-                return "fallback";
+//            else if (queryResult.getIntent().getDisplayName().equals("Default Welcome Intent"))
+//                return "fallback";
         }
         item.put("question", question);
         item.put("answer", decodedText);
@@ -258,7 +258,7 @@ public class MainServiceImpl implements MainService {
 
                 ChatGPTResponse chatGPTResponse = gson.fromJson(responseBody, ChatGPTResponse.class);
 
-                String answer = "답변을 찾을 수 없어 ChatGPT 한테 물어보았습니다\n\n" + chatGPTResponse.getChoices().get(0).getText();
+                String answer = "답변을 찾을 수 없어서 ChatGPT 한테 물어봤어.\n" + chatGPTResponse.getChoices().get(0).getText();
 
                 item.put("question", question);
                 item.put("answer", answer);
