@@ -114,8 +114,8 @@ public class MainServiceImpl implements MainService {
 
             if (queryResult.getIntent().getDisplayName().equals("Default Fallback Intent"))
                 return "fallback";
-            else if (queryResult.getIntent().getDisplayName().equals("Default Welcome Intent"))
-                return "fallback";
+//            else if (queryResult.getIntent().getDisplayName().equals("Default Welcome Intent"))
+//                return "fallback";
         }
         item.put("question", question);
         item.put("answer", decodedText);
